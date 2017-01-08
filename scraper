@@ -1,0 +1,46 @@
+# this is intended to print all of movie titles, years, descriptions for action movies between 2008-2016. SQL should pull
+# each with "Russian" in description
+
+from pyquery import PyQuery as pq
+from lxml import etree
+import requests
+from stemmer import stem
+
+from bs4 import BeautifulSoup 
+import sqlite3
+conn = sqlite3.connect('films.db')
+c = conn.cursor()
+
+c.execute('CREATE TABLE films (title text, year text)')
+response = requests.get('http://www.imdb.com/search/title?genres=action')
+
+doc = pq(response.content)
+titles = doc('.title')
+
+for title in titles:
+   response_title = requests.get(title.attrib['href'])
+   doc2 = pq(response_title.content)
+ # get this attr:  description = doc2('#WHATGOESHERE')
+ 
+   c.execute("INSERT INTO films VALUES (?, ?)", [title.text, year.text()])
+   conn.commit()
+
+# results = c.execute('''
+  #SELECT title FROM films 
+  #WHERE description LIKE "%Russian%"
+  #''')
+
+ #results = c.execute('''
+   #SELECT * FROM films 
+   #''')
+
+for r in results:
+	print r
+
+conn.close
+
+--
+
+#virtualenv venv
+#source venv/bin/activate
+#python drakfeels.py
